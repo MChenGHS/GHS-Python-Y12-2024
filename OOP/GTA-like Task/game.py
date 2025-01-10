@@ -187,7 +187,32 @@ class Plane(Vehicle):
             passenger.position = newPosition
         print(f"Vehicle {self.VRN} is moving from {original_position} to {newPosition}")
 
+class EmergencyVehicle(Vehicle):
+    def __init__(self, VRN, Make, Model, Livery, Position, Capacity):
+        super().__init__(VRN, Make, Model, Livery, Position, Capacity)
+        self.siren = "off"
 
+    def setsiren(self, action):
+        if action == "on":
+            self.siren = "on"
+            print("Wee Woo Wee Woo")
+        elif action == "off":
+            self.siren = "off"
+        else:
+            print(f"Invalid siren action. Use 'on' or 'off'.")
+
+    def geton(self, NPC):
+        # Simplified distance check
+        distance = math.sqrt((self.Position[0] - NPC.position[0])**2 + (self.Position[1] - NPC.position[1])**2)
+        if distance <= 5:
+            if len(self.Passengers) < self.Capacity:
+                self.Passengers.append(NPC)
+                print(f"NPC {NPC.name} got on vehicle {self.VRN}.")
+            else:
+                print(f"Vehicle {self.VRN} is full.")
+        else:
+            print(f"NPC {NPC.name} is too far from vehicle {self.VRN}.")
+    
 # Create some NPC instances
 npc1 = NPC("John Doe", "male", "casual", "adult", (10, 20))
 npc2 = NPC("Jane Smith", "female", "business", "adult", (50, 30))
@@ -221,3 +246,7 @@ plane1.landinggearcontrol("up")
 plane1.move((200, 100, 15000)) 
 
 print(f"Plane1: {plane1.__dict__}")
+
+ambulance = EmergencyVehicle("345-ABC", "Ford", "Explorer", "ambulance", (50, 50), 2)
+ambulance.setsiren("on")
+ambulance.geton(NPC("John Doe", "male", "casual", "adult", (48, 48))) 
