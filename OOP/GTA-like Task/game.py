@@ -107,6 +107,64 @@ class NPC:
         else:
             self.changeMood(random.choice(['nervous', 'attack']))
 
+import math
+
+class Vehicle:
+    def __init__(self, VRN, Make, Model, Colour, Position, Capacity):
+        self.VRN = VRN
+        self.Make = Make
+        self.Model = Model
+        self.Colour = Colour
+        self.Position = Position
+        self.Capacity = Capacity
+        self.Passengers = []  # Initialize as an empty list
+
+    def move(self, newPosition, speed=1):
+        original_position = self.Position
+        if self.is_position_occupied(newPosition):  # Check if destination is occupied
+            newPosition = self.find_empty_position(newPosition)
+        self.position = newPosition
+
+        for passenger in self.Passengers:
+            passenger.position = newPosition  # Update passenger positions
+        print(f"Vehicle {self.VRN} is moving from {original_position} to {newPosition}")
+
+    def geton(self, NPC):
+        # Check if the NPC is nearby
+        distance = math.sqrt((self.Position[0] - NPC.position[0])**2 + (self.Position[1] - NPC.position[1])**2)
+        if distance <= 5:  # Adjust distance threshold as needed
+            if len(self.Passengers) < self.Capacity:
+                self.Passengers.append(NPC)
+                print(f"NPC {NPC.name} got on vehicle {self.VRN}.")
+            else:
+                print(f"Vehicle {self.VRN} is full.")
+        else:
+            print(f"NPC {NPC.name} is too far from vehicle {self.VRN}.")
+
+    def getoff(self, NPC):
+        try:
+            self.Passengers.remove(NPC)
+            print(f"NPC {NPC.name} got off vehicle {self.VRN}.")
+        except ValueError:
+            print(f"NPC {NPC.name} is not in vehicle {self.VRN}.")
+    
+    def is_position_occupied(self, position):
+        """
+        Checks if the given position is already occupied by another NPC.
+        """
+        global world_map
+        return world_map[position[0]][position[1]] is not None
+    
+    def find_empty_position(self, target_position):
+        # This method finds a random empty position near the target position.
+        # You'll need to define the range of positions to check.
+        x, y = target_position
+        while True:
+            new_x = random.randint(x - 1, x + 1)
+            new_y = random.randint(y - 1, y + 1)
+            if not self.is_position_occupied((new_x, new_y)):
+                return (new_x, new_y)
+
 # Create some NPC instances
 npc1 = NPC("John Doe", "male", "casual", "adult", (10, 20))
 npc2 = NPC("Jane Smith", "female", "business", "adult", (50, 30))
@@ -124,3 +182,12 @@ npc3.alerted()
 print(f"NPC1: {npc1.__dict__}")
 print(f"NPC2: {npc2.__dict__}")
 print(f"NPC3: {npc3.__dict__}")
+
+vehicle1 = Vehicle("ABC-123", "Volvo", "XC90", "Red", (10, 15), 5)
+
+vehicle1.geton(npc1)  # NPC1 gets on the vehicle
+vehicle1.geton(npc2)  # NPC2 gets on the vehicle
+
+vehicle1.move((50, 80))  # Move the vehicle and update passenger positions
+
+vehicle1.getoff(npc1)  # NPC1 gets off the vehicle
