@@ -165,6 +165,29 @@ class Vehicle:
             if not self.is_position_occupied((new_x, new_y)):
                 return (new_x, new_y)
 
+class Plane(Vehicle):
+    def __init__(self, VRN, Make, Model, Colour, Position, Capacity):
+        super().__init__(VRN, Make, Model, Colour, Position, Capacity)
+        self.landinggear = "down"
+
+    def landinggearcontrol(self, action):
+        if action == "up":
+            self.landinggear = "up"
+            print(f"Vehicle {self.VRN} landing gear retracted.")
+        elif action == "down":
+            self.landinggear = "down"
+            print(f"Vehicle {self.VRN} landing gear deployed.")
+        else:
+            print(f"Invalid landing gear action. Use 'up' or 'down'.")
+
+    def move(self, newPosition, speed=1): # Simple move method. Need to be replaced.
+        original_position = self.Position
+        self.Position = newPosition  # Assuming newPosition is a 3D tuple (x, y, z)
+        for passenger in self.Passengers:
+            passenger.position = newPosition
+        print(f"Vehicle {self.VRN} is moving from {original_position} to {newPosition}")
+
+
 # Create some NPC instances
 npc1 = NPC("John Doe", "male", "casual", "adult", (10, 20))
 npc2 = NPC("Jane Smith", "female", "business", "adult", (50, 30))
@@ -191,3 +214,10 @@ vehicle1.geton(npc2)  # NPC2 gets on the vehicle
 vehicle1.move((50, 80))  # Move the vehicle and update passenger positions
 
 vehicle1.getoff(npc1)  # NPC1 gets off the vehicle
+
+plane1 = Plane("G-BOAC", "Boeing", "747", "White", (100, 50, 10000), 500)
+
+plane1.landinggearcontrol("up")
+plane1.move((200, 100, 15000)) 
+
+print(f"Plane1: {plane1.__dict__}")
